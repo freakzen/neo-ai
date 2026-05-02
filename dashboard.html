@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Neo AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+
+<body>
+    <nav class="navbar container">
+        <div class="nav-logo">Neo AI</div>
+        <div class="nav-links" style="display: flex; align-items: center;">
+            <a href="index.html">Home</a>
+            <a href="learn-more.html">Learn More</a>
+            <a href="clinics.html">Clinics Near Me</a>
+            <a href="chatbot.html">AI Assistant</a>
+            <button id="theme-toggle" class="btn btn-secondary" style="padding: 6px 12px; margin-left: 10px;"
+                aria-label="Toggle dark mode">🌙</button>
+        </div>
+    </nav>
+    <main class="container main-layout animate-fade-in">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h2>Upload Image</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Upload a clear image of the skin condition for
+                    analysis.</p>
+                <div class="upload-zone" id="drop-zone">
+                    <div style="font-size: 3rem; color: var(--primary-color);">+</div>
+                    <p style="font-weight: 500;">Drag & Drop or Click to Browse</p>
+                    <input type="file" id="file-input" style="display: none;" accept="image/*">
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-secondary" id="camera-btn" style="width: 100%; justify-content: center;">📷
+                        Use Camera</button>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Preview</h2>
+                <div id="preview-container"
+                    style="min-height: 250px; background: var(--bg-color); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; margin-top: 20px; overflow: hidden; border: 1px solid var(--border-color);">
+                    <span style="color: var(--text-muted);">No image selected</span>
+                </div>
+
+                <div id="patient-details-form"
+                    style="margin-top: 20px; background: var(--bg-color); padding: 15px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                    <h3 style="font-size: 1rem; margin-bottom: 10px; color: var(--primary-dark);">Patient Details
+                        (Optional)</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="patient-name" placeholder="Name"
+                            style="padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; width: 100%; box-sizing: border-box;">
+                        <input type="number" id="patient-age" placeholder="Age"
+                            style="padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <select id="patient-sex"
+                            style="padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; width: 100%; box-sizing: border-box;">
+                            <option value="">Select Sex</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <input type="text" id="patient-history" placeholder="Family History (e.g. None)"
+                            style="padding: 8px; border: 1px solid var(--border-color); border-radius: 4px; width: 100%; box-sizing: border-box;">
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-primary" id="analyze-btn"
+                        style="width: 100%; justify-content: center; display: none;">Analyze Condition</button>
+                </div>
+                <div id="loader" style="display: none; text-align: center; margin-top: 20px;">
+                    <div class="loader"></div>
+                    <p style="margin-top: 15px; font-weight: 500; color: var(--primary-dark);">Analyzing with Hybrid
+                        Model...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="config/api_keys.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/upload.js?v=2"></script>
+    <script>
+        const toggleBtn = document.getElementById('theme-toggle');
+        const root = document.documentElement;
+
+        // Load preference
+        if (localStorage.getItem('theme') === 'dark') {
+            root.setAttribute('data-theme', 'dark');
+            toggleBtn.textContent = '☀️';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            const isDark = root.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.textContent = '🌙';
+            } else {
+                root.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.textContent = '☀️';
+            }
+        });
+    </script>
+</body>
+
+</html>

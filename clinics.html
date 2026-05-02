@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinics Near Me - Neo AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+
+<body>
+    <nav class="navbar container">
+        <div class="nav-logo">Neo AI</div>
+        <div class="nav-links" style="display: flex; align-items: center;">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">New Analysis</a>
+            <a href="chatbot.html">AI Assistant</a>
+            <button id="theme-toggle" class="btn btn-secondary" style="padding: 6px 12px; margin-left: 10px;"
+                aria-label="Toggle dark mode">🌙</button>
+        </div>
+    </nav>
+    <main class="container main-layout animate-fade-in" style="max-width: 800px;">
+        <div class="card" style="text-align: center; padding: 40px;">
+            <h2 style="margin-bottom: 10px; font-size: 2rem; color: var(--primary-dark);">Find Skin Clinics Near You
+            </h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Allow location access to discover the nearest
+                dermatologists and skin care clinics in your area.</p>
+
+            <button id="find-clinics-btn" class="btn btn-primary"
+                style="font-size: 1.1rem; padding: 12px 24px; margin-bottom: 20px;">
+                📍 Locate Clinics
+            </button>
+
+            <p id="location-status" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;"></p>
+
+            <div id="map-container"
+                style="display: none; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-color); background: var(--bg-color); position: relative;">
+                <iframe id="map-frame" width="100%" height="450" style="border:0; display: block;" allowfullscreen=""
+                    loading="lazy"></iframe>
+                <div
+                    style="padding: 20px; background: var(--surface-color); border-top: 1px solid var(--border-color);">
+                    <h3 style="margin-bottom: 10px; font-size: 1.1rem;">Ready to find a specialist?</h3>
+                    <a id="gmaps-link" href="#" target="_blank" class="btn btn-primary"
+                        style="display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                        🗺️ View Skin Clinics on Google Maps
+                    </a>
+                </div>
+            </div>
+
+            <!-- AI Clinics Results -->
+            <div id="ai-clinics-results"
+                style="display: none; margin-top: 30px; text-align: left; background: var(--surface-color); padding: 25px; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                <h3
+                    style="color: var(--primary-dark); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                    🩺 AI Recommended Clinics</h3>
+                <div id="ai-clinics-content" style="color: var(--text-main); font-size: 0.95rem; line-height: 1.6;">
+                    Loading AI recommendations...
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="config/api_keys.js"></script>
+
+    <script>
+        const toggleBtn = document.getElementById('theme-toggle');
+        const root = document.documentElement;
+
+        if (localStorage.getItem('theme') === 'dark') {
+            root.setAttribute('data-theme', 'dark');
+            toggleBtn.textContent = '☀️';
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            const isDark = root.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.textContent = '🌙';
+            } else {
+                root.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.textContent = '☀️';
+            }
+        });
+
+        const findBtn = document.getElementById('find-clinics-btn');
+        const statusText = document.getElementById('location-status');
+        const mapContainer = document.getElementById('map-container');
+        const mapFrame = document.getElementById('map-frame');
+
+        findBtn.addEventListener('click', () => {
+            statusText.textContent = 'Locating you...';
+            findBtn.disabled = true;
+
+            // Using default location coordinates as requested
+            const lat = 16.338390;
+            const lon = 75.288520;
+
+            setTimeout(() => {
+                statusText.textContent = 'Location found! Loading nearest clinics...';
+
+                // Map centered exactly on user's location
+                const mapUrl = `https://maps.google.com/maps?q=${lat},${lon}&z=14&output=embed`;
+                mapFrame.src = mapUrl;
+
+                const gmapsLink = document.getElementById('gmaps-link');
+                if (gmapsLink) {
+                    gmapsLink.href = `https://www.google.com/maps/search/dermatologist+clinic/@${lat},${lon},14z`;
+                }
+
+                // Show map instantly, avoid relying on onload which can hang
+                statusText.style.display = 'none';
+                mapContainer.style.display = 'block';
+                findBtn.style.display = 'none';
+
+                // Use AI to fetch nearby clinics
+                fetchAIClinics(lat, lon);
+            }, 600); // Small delay to simulate finding location
+        });
+
+        async function fetchAIClinics(lat, lon) {
+            const aiContainer = document.getElementById('ai-clinics-results');
+            const aiContent = document.getElementById('ai-clinics-content');
+            aiContainer.style.display = 'block';
+
+            try {
+                // 1. Reverse Geocode to get the city
+                const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                const geoData = await geoRes.json();
+                const city = geoData.address.suburb || geoData.address.neighbourhood || geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.county || "your area";
+                const state = geoData.address.state || "";
+
+                // 2. Call AI with the API KEY
+                const apiKey = typeof API_CONFIG !== 'undefined' ? API_CONFIG.GROK_API_KEY : '';
+                const endpoint = typeof getApiEndpoint === 'function' ? getApiEndpoint() : 'https://api.groq.com/openai/v1/chat/completions';
+
+                if (!apiKey) {
+                    aiContent.innerHTML = "No API Key found. Please configure config/api_keys.js";
+                    return;
+                }
+
+                const prompt = `I am located in ${city}, ${state}. Please list 3-5 real, well-known dermatology or skin clinics in or near ${city}. Provide their names and a brief description. Format your response as a clean, concise HTML bulleted list (<ul><li>...</li></ul>) without markdown stars. Do not include any other conversational text.`;
+
+                const payload = {
+                    model: typeof API_CONFIG !== 'undefined' ? API_CONFIG.GROK_MODEL : 'llama-3.3-70b-versatile',
+                    messages: [
+                        { role: 'system', content: 'You are a helpful medical directory assistant. Return ONLY valid HTML.' },
+                        { role: 'user', content: prompt }
+                    ],
+                    temperature: 0.3
+                };
+
+                const aiRes = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (aiRes.ok) {
+                    const aiData = await aiRes.json();
+                    let responseHtml = aiData.choices[0].message.content;
+                    // clean up any markdown wrappers the AI might incorrectly add
+                    responseHtml = responseHtml.replace(/```html|```/g, '');
+                    aiContent.innerHTML = responseHtml;
+                } else {
+                    aiContent.innerHTML = "Could not fetch AI recommendations at this time.";
+                }
+            } catch (err) {
+                console.error(err);
+                aiContent.innerHTML = "Error connecting to AI service.";
+            }
+        }
+    </script>
+</body>
+
+</html>

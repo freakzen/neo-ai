@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn More - Neo AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+
+<body>
+    <nav class="navbar container">
+        <div class="nav-logo">Neo AI</div>
+        <div class="nav-links" style="display: flex; align-items: center;">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Try App</a>
+            <a href="chatbot.html">AI Assistant</a>
+            <button id="theme-toggle" class="btn btn-secondary" style="padding: 6px 12px; margin-left: 10px;" aria-label="Toggle dark mode">🌙</button>
+        </div>
+    </nav>
+    <main class="container main-layout animate-fade-in" style="max-width: 800px;">
+        <h1 style="font-size: 2.5rem; color: var(--primary-dark); margin-bottom: 20px;">About Neo AI Framework</h1>
+        
+        <div class="card" style="margin-bottom: 30px;">
+            <h2 style="margin-bottom: 15px; color: var(--primary-color);">Our Mission</h2>
+            <p style="color: var(--text-main); font-size: 1.1rem; line-height: 1.8;">
+                Neo AI is an advanced, hybrid explainable deep learning framework specifically designed for dermatological diagnostics. 
+                Our mission is to bridge the gap between cutting-edge artificial intelligence and clinical dermatology, providing doctors and patients with rapid, reliable, and transparent skin disease assessments.
+            </p>
+        </div>
+
+        <div class="card" style="margin-bottom: 30px;">
+            <h2 style="margin-bottom: 15px; color: var(--primary-color);">How It Works</h2>
+            <p style="color: var(--text-main); line-height: 1.8; margin-bottom: 15px;">
+                Our platform utilizes a hybrid pipeline combining robust feature extraction with state-of-the-art vision models. 
+                When an image is uploaded:
+            </p>
+            <ul style="color: var(--text-main); padding-left: 20px; line-height: 1.8;">
+                <li><strong>OOD Detection:</strong> A built-in heuristic filter checks if the image is actually of human skin, instantly rejecting irrelevant objects like bottles or keyboards.</li>
+                <li><strong>Classification:</strong> The image is securely processed to determine the top possible dermatological conditions from our database of over 20 diseases.</li>
+                <li><strong>Explainable AI (XAI):</strong> We use a modified Grad-CAM (Gradient-weighted Class Activation Mapping) algorithm to highlight exactly which pixels influenced the model's decision, ensuring total transparency.</li>
+            </ul>
+        </div>
+
+        <div class="card" style="margin-bottom: 30px;">
+            <h2 style="margin-bottom: 15px; color: var(--primary-color);">AI Assistant Integration</h2>
+            <p style="color: var(--text-main); line-height: 1.8;">
+                To assist users with understanding their results, Neo AI features a clinical chatbot powered by high-speed inference Llama models. The assistant provides context-aware, medical-disclaimer-backed explanations for user queries regarding their symptoms and XAI heatmap outputs.
+            </p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px; margin-bottom: 60px;">
+            <a href="dashboard.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 15px 30px;">Start Diagnosis Now</a>
+        </div>
+    </main>
+    <script>
+        const toggleBtn = document.getElementById('theme-toggle');
+        const root = document.documentElement;
+        
+        // Load preference
+        if (localStorage.getItem('theme') === 'dark') {
+            root.setAttribute('data-theme', 'dark');
+            toggleBtn.textContent = '☀️';
+        }
+        
+        toggleBtn.addEventListener('click', () => {
+            const isDark = root.getAttribute('data-theme') === 'dark';
+            if (isDark) {
+                root.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                toggleBtn.textContent = '🌙';
+            } else {
+                root.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                toggleBtn.textContent = '☀️';
+            }
+        });
+    </script>
+</body>
+
+</html>

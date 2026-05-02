@@ -1,0 +1,22 @@
+export const DISEASES = [
+    "Acne",
+    "Eczema",
+    "Psoriasis",
+    "Melanoma",
+    "Vitiligo",
+    "Basal Cell Carcinoma",
+    "Squamous Cell Carcinoma",
+    "Rosacea",
+    "Hives",
+    "Contact Dermatitis",
+    "Ringworm",
+    "Impetigo",
+    "Warts",
+    "Chickenpox",
+    "Measles",
+    "Lupus",
+    "Cellulitis",
+    "Scabies",
+    "Seborrheic Dermatitis",
+    "Shingles"
+];

@@ -1,0 +1,20 @@
+# Version control
+.env.local
+*.pth
+*.pyc
+__pycache__/
+*.egg-info/
+
+# Node / Venv
+node_modules/
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+*.suo
+*.user
